@@ -466,6 +466,13 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get the adsorption force
       )delim");
   forces.def(
+      "getAggregationForce",
+      [](Forces &s) { return toMatrix(s.aggregationForceVec); },
+      py::return_value_policy::copy,
+      R"delim(
+          get the aggregation force
+      )delim");
+  forces.def(
       "getExternalForce",
       [](Forces &s) { return toMatrix(s.externalForceVec); },
       py::return_value_policy::copy,
@@ -1182,6 +1189,15 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get adsorption energy per protein
       )delim");
 
+  py::class_<Parameters::Aggregation> aggregation(pymem3dg, "Aggregation",
+                                                R"delim(
+        The aggregation parameters
+    )delim");
+  aggregation.def_readwrite("chi", &Parameters::Aggregation::chi,
+                           R"delim(
+          get aggregation energy 
+      )delim");
+
   py::class_<Parameters::External> external(pymem3dg, "External",
                                             R"delim(
         The external force parameters
@@ -1283,6 +1299,10 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
                            R"delim(
           adsorption parameters
       )delim");
+  parameters.def_readwrite("aggregation", &Parameters::aggregation,
+                           R"delim(
+          aggregation parameters
+      )delim");
   parameters.def_readwrite("dirichlet", &Parameters::dirichlet,
                            R"delim(
           dirichlet parameters
@@ -1357,6 +1377,10 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
   energy.def_readwrite("adsorptionEnergy", &Energy::adsorptionEnergy,
                        R"delim(
           get adsorption energy of the membrane protein  
+      )delim");
+  energy.def_readwrite("aggregationEnergy", &Energy::aggregationEnergy,
+                       R"delim(
+          get aggregation energy of the membrane protein  
       )delim");
   energy.def_readwrite("dirichletEnergy", &Energy::dirichletEnergy,
                        R"delim(
