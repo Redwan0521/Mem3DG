@@ -164,17 +164,17 @@ gc::VertexData<gc::Vector3> System::computeVertexSchlafliVector() {
 
 gc::VertexData<gc::Vector3> System::computeVertexGaussianCurvatureVector() {
   return halfedgeVectorToVertexVector(*mesh, *vpg,
-                                   computeHalfedgeGaussianCurvatureVector);
+                                      computeHalfedgeGaussianCurvatureVector);
 }
 
 gc::VertexData<gc::Vector3> System::computeVertexMeanCurvatureVector() {
   return halfedgeVectorToVertexVector(*mesh, *vpg,
-                                   computeHalfedgeMeanCurvatureVector);
+                                      computeHalfedgeMeanCurvatureVector);
 }
 
 gc::VertexData<gc::Vector3> System::computeVertexVolumeVariationVector() {
   return halfedgeVectorToVertexVector(*mesh, *vpg,
-                                   computeHalfedgeVolumeVariationVector);
+                                      computeHalfedgeVolumeVariationVector);
 }
 
 gcs::VertexData<gc::Vector3> System::halfedgeVectorToVertexVector(
@@ -307,7 +307,7 @@ void System::computeMechanicalForces() {
 }
 
 EigenVectorX3dr System::prescribeExternalForce() {
-#define MODE 0
+#define MODE 1
 #if MODE == 0 // axial sinusoidal force
   double freq = 5;
   double totalHeight = toMatrix(vpg->inputVertexPositions).col(2).maxCoeff() -
@@ -332,9 +332,11 @@ EigenVectorX3dr System::prescribeExternalForce() {
   double standardDeviation =
       geodesicDistanceFromPtInd.raw().maxCoeff() / concentration;
 
-  gc::Vector3 anchor{0, 0, 1};
-  gc::Vector3 direction;
-  direction = anchor - vpg->inputVertexPositions[thePoint.nearestVertex()];
+  // gc::Vector3 anchor{0, 0, 1};
+  // gc::Vector3 direction =
+  //     anchor - vpg->inputVertexPositions[thePoint.nearestVertex()];
+  gc::Vector3 direction{0, 0, 1};
+
   for (std::size_t i = 0; i < mesh->nVertices(); ++i) {
     gc::Vertex v{mesh->vertex(i)};
     forces.externalForceVec[i] =
