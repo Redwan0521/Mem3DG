@@ -332,7 +332,7 @@ EigenVectorX3dr System::prescribeExternalForce() {
   double standardDeviation =
       geodesicDistanceFromPtInd.raw().maxCoeff() / concentration;
 
-  // gc::Vector3 anchor{0, 0, 1};
+  gc::Vector3 anchor{0, 0, 3.5};
   // gc::Vector3 direction =
   //     anchor - vpg->inputVertexPositions[thePoint.nearestVertex()];
   gc::Vector3 direction{0, 0, 1};
@@ -342,7 +342,8 @@ EigenVectorX3dr System::prescribeExternalForce() {
     forces.externalForceVec[i] =
         parameters.external.Kf *
         gaussianDistribution(geodesicDistanceFromPtInd[v], standardDeviation) *
-        vpg->vertexDualArea(v) * direction;
+        vpg->vertexDualArea(v) * direction *
+        (anchor - vpg->inputVertexPositions[thePoint.nearestVertex()]).z;
   }
 #endif
   forces.externalForce = forces.ontoNormal(forces.externalForceVec);
