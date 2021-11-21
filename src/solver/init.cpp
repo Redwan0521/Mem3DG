@@ -192,8 +192,8 @@ void System::saveRichData(std::string PathToSave, bool isJustGeometry) {
     gcs::VertexData<double> smthingMsk(*mesh);
     smthingMsk.fromVector(smoothingMask.raw().cast<double>());
     richData.addVertexProperty("smoothing_mask", smthingMsk);
-    gcs::VertexData<double> tkr(*mesh);
-    tkr.fromVector(thePointTracker.raw().cast<double>());
+    gcs::VertexData<int> tkr(*mesh);
+    tkr.fromVector(thePointTracker.raw().cast<int>());
     richData.addVertexProperty("the_point", tkr);
 
     // write geometry
