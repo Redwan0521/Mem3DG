@@ -314,7 +314,7 @@ void System::computeMechanicalForces() {
 }
 
 EigenVectorX3dr System::prescribeExternalForce() {
-#define MODE 0
+#define MODE 1
 #if MODE == 0 // axial sinusoidal force
   double freq = 5;
   double totalHeight = toMatrix(vpg->inputVertexPositions).col(2).maxCoeff() -
@@ -333,19 +333,18 @@ EigenVectorX3dr System::prescribeExternalForce() {
   }
 
 #elif MODE == 1 // anchor force
-  double concentration = 10;
+  double decayTime = 500;
   gcs::HeatMethodDistanceSolver heatSolver(*vpg);
   geodesicDistanceFromPtInd = heatSolver.computeDistance(thePoint);
-  double standardDeviation =
-      geodesicDistanceFromPtInd.raw().maxCoeff() / concentration;
+  double standardDeviation = 0.02;
 
-  gc::Vector3 anchor{0, 0, 1};
-  gc::Vector3 direction;
-  direction = anchor - vpg->inputVertexPositions[thePoint.nearestVertex()];
+  // gc::Vector3 anchor{0, 0, 1};
+  gc::Vector3 direction{0, 0, 1};
+  // direction = anchor - vpg->inputVertexPositions[thePoint.nearestVertex()];
   for (std::size_t i = 0; i < mesh->nVertices(); ++i) {
     gc::Vertex v{mesh->vertex(i)};
     forces.externalForceVec[i] =
-        parameters.external.Kf *
+        exp(-time / decayTime) * parameters.external.Kf *
         gaussianDistribution(geodesicDistanceFromPtInd[v], standardDeviation) *
         vpg->vertexDualArea(v) * direction;
   }
