@@ -687,6 +687,16 @@ polyscope::SurfaceMesh *registerSurfaceMesh(std::string plyName,
           "osmotic_force",
           ptrRichData->getVertexProperty<double>("osmotic_force"));
     }
+    if (options.adsorption_force) {
+      polyscopeMesh->addVertexScalarQuantity(
+          "adsorption_force",
+          ptrRichData->getVertexProperty<double>("adsorption_force"));
+    }
+    if (options.aggregation_force) {
+      polyscopeMesh->addVertexScalarQuantity(
+          "aggregation_force",
+          ptrRichData->getVertexProperty<double>("aggregation_force"));
+    }
     if (options.mask) {
       polyscopeMesh->addVertexScalarQuantity(
           "mask", ptrRichData->getVertexProperty<double>("mask"));
@@ -723,6 +733,11 @@ polyscope::SurfaceMesh *registerSurfaceMesh(std::string plyName,
       polyscopeMesh->addVertexScalarQuantity(
           "adsorption_potential",
           ptrRichData->getVertexProperty<double>("adsorption_potential"));
+    }
+    if (options.aggregation_potential) {
+      polyscopeMesh->addVertexScalarQuantity(
+          "aggregation_potential",
+          ptrRichData->getVertexProperty<double>("aggregation_potential"));
     }
     /*gcs::VertexData<gc::Vector3> vertexVelocity =
         ptrRichData->getVertexProperty<gc::Vector3>("vertex_velocity");*/
@@ -807,6 +822,20 @@ polyscope::SurfaceMesh *registerSurfaceMesh(std::string plyName,
               ptrRichData->getVertexProperty<double>("osmotic_force"))
           ->setMapRange(std::make_pair(mapMinLim, mapMaxLim));
     }
+    if (options.adsorption_force) {
+      polyscopeMesh
+          ->addVertexScalarQuantity(
+              "adsorption_force",
+              ptrRichData->getVertexProperty<double>("adsorption_force"))
+          ->setMapRange(std::make_pair(mapMinLim, mapMaxLim));
+    }
+    if (options.aggregation_force) {
+      polyscopeMesh
+          ->addVertexScalarQuantity(
+              "aggregation_force",
+              ptrRichData->getVertexProperty<double>("aggregation_force"))
+          ->setMapRange(std::make_pair(mapMinLim, mapMaxLim));
+    }
     if (options.mask) {
       polyscopeMesh
           ->addVertexScalarQuantity(
@@ -846,6 +875,13 @@ polyscope::SurfaceMesh *registerSurfaceMesh(std::string plyName,
           ->addVertexScalarQuantity(
               "adsorption_potential",
               ptrRichData->getVertexProperty<double>("adsorption_potential"))
+          ->setMapRange(std::make_pair(mapMinLim, mapMaxLim));
+    }
+    if (options.aggregation_potential) {
+      polyscopeMesh
+          ->addVertexScalarQuantity(
+              "aggregation_potential",
+              ptrRichData->getVertexProperty<double>("aggregation_potential"))
           ->setMapRange(std::make_pair(mapMinLim, mapMaxLim));
     }
     if (options.the_point) {

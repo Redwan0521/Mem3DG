@@ -512,6 +512,13 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get the adsorption potential
       )delim");
   forces.def(
+      "getAggregationPotential",
+      [](Forces &s) { return toMatrix(s.aggregationPotential); },
+      py::return_value_policy::copy,
+      R"delim(
+          get the aggregation potential
+      )delim");
+  forces.def(
       "getDiffusionPotential",
       [](Forces &s) { return toMatrix(s.diffusionPotential); },
       py::return_value_policy::copy,
@@ -1493,6 +1500,14 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
                            R"delim(
        visualize line tension force
       )delim");
+  quantities.def_readwrite("adsorption_force", &Quantities::adsorption_force,
+                           R"delim(
+       visualize adsorption force
+      )delim");
+  quantities.def_readwrite("aggregation_force", &Quantities::aggregation_force,
+                           R"delim(
+       visualize aggregation force
+      )delim");
   quantities.def_readwrite("mask", &Quantities::mask,
                            R"delim(
         visualize mask for integration
@@ -1527,6 +1542,11 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
                            &Quantities::adsorption_potential,
                            R"delim(
         visualize adsorption component of chemical potential
+      )delim");
+  quantities.def_readwrite("aggregation_potential",
+                           &Quantities::aggregation_potential,
+                           R"delim(
+        visualize aggregation component of chemical potential
       )delim");
 
 #pragma endregion visualization
