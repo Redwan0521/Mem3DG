@@ -1062,6 +1062,14 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
              R"delim(
           save snapshot data to directory
       )delim");
+
+  /**
+   * @brief Method: mutate the mesh
+   */
+  system.def("mutateMesh", &System::mutateMesh,
+             R"delim(
+          mutate the mesh 
+      )delim");
 #pragma endregion system
 
 #pragma region parameters
