@@ -343,35 +343,41 @@ void System::mutateMesh() {
     // globalSmoothing(smoothingMask);
     globalUpdateAfterMutation();
   }
+
+  globalSmoothing();
 }
 
-void System::globalSmoothing(gcs::VertexData<bool> &smoothingMask, double tol,
-                             double stepSize) {
+Eigen::Matrix<bool, Eigen::Dynamic, 1>
+System::globalSmoothing(double target, double initStep, size_t maxIteration) {
+  
+  double stepSize = initStep;
   EigenVectorX1d gradient;
   double pastGradNorm = 1e10;
   double gradNorm;
+  size_t num_iter = 0;
+
   vpg->refreshQuantities();
   computeMechanicalForces();
-  smoothingMask.raw() = outlierMask(forces.bendingForce.raw());
-  std::cout << "number of 1 vs 0: " << smoothingMask.raw().array().sum() << " "
-            << smoothingMask.raw().rows() << std::endl;
+  Eigen::Matrix<bool, Eigen::Dynamic, 1> smoothingMask =
+      outlierMask(forces.bendingForce.raw(), 0.5);
+  // std::cout << "number of 1 vs 0: " << smoothingMask.array().sum() << " "
+  //           << smoothingMask.rows() << std::endl;
   auto pos_e = gc::EigenMap<double, 3>(vpg->inputVertexPositions);
   auto vertexAngleNormal_e = gc::EigenMap<double, 3>(vpg->vertexNormals);
-  gradient = (smoothingMask.raw().cast<double>()).array() *
+  gradient = (smoothingMask.cast<double>()).array() *
              forces.bendingForce.raw().array();
-  tol = gradient.cwiseAbs().sum() / smoothingMask.raw().cast<int>().sum() / 5;
+  double tol = gradient.cwiseAbs().sum() * target;
   do {
     vpg->refreshQuantities();
     computeMechanicalForces();
-    smoothingMask.raw() = outlierMask(forces.bendingForce.raw());
-    std::cout << "number of 1 vs 0: " << smoothingMask.raw().array().sum()
-              << " " << smoothingMask.raw().rows() << std::endl;
+    smoothingMask = outlierMask(forces.bendingForce.raw(), 0.5);
+    // std::cout << "number of 1 vs 0: " << smoothingMask.array().sum() << " "
+    //           << smoothingMask.rows() << std::endl;
     auto pos_e = gc::EigenMap<double, 3>(vpg->inputVertexPositions);
     auto vertexAngleNormal_e = gc::EigenMap<double, 3>(vpg->vertexNormals);
-    gradient = (smoothingMask.raw().cast<double>()).array() *
+    gradient = (smoothingMask.cast<double>()).array() *
                forces.bendingForce.raw().array();
-    gradNorm =
-        gradient.cwiseAbs().sum() / smoothingMask.raw().cast<int>().sum();
+    gradNorm = gradient.cwiseAbs().sum();
     if (gradNorm > pastGradNorm) {
       stepSize /= 2;
       // std::cout << "WARNING: globalSmoothing: stepSize too large, cut in
@@ -381,8 +387,11 @@ void System::globalSmoothing(gcs::VertexData<bool> &smoothingMask, double tol,
     pos_e.array() +=
         rowwiseScalarProduct(gradient, vertexAngleNormal_e).array() * stepSize;
     pastGradNorm = gradNorm;
-    std::cout << "gradient:  " << gradNorm << std::endl;
-  } while (gradNorm > tol);
+    // std::cout << "gradient:  " << gradNorm << std::endl;
+    num_iter++;
+  } while (gradNorm > tol && num_iter < maxIteration);
+
+  return smoothingMask;
 }
 
 void System::localSmoothing(const gcs::Vertex &v, std::size_t num,

@@ -143,7 +143,8 @@ public:
   // =============        Constructors           ==============
   // ==========================================================
   /**
-   * @brief Construct a new (geometry) System by reading topology and vertex matrices
+   * @brief Construct a new (geometry) System by reading topology and vertex
+   * matrices
    *
    * @param topologyMatrix,  topology matrix, F x 3
    * @param vertexMatrix,    input Mesh coordinate matrix, V x 3
@@ -830,9 +831,13 @@ public:
 
   /**
    * @brief global smoothing after mutation of the mesh
+   * @param target target reduce of force norm
+   * @param initStep init guess of time step 
+   * @param maxIteration maximum number of iteration
    */
-  void globalSmoothing(gcs::VertexData<bool> &smoothingMask, double tol = 1e-6,
-                       double stepSize = 1);
+  Eigen::Matrix<bool, Eigen::Dynamic, 1>
+  globalSmoothing(double target = 0.5, double initStep = 1,
+                  size_t maxInteration = 20);
   /**
    * @brief infer the target surface area of the system
    */
