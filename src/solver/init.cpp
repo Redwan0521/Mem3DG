@@ -189,8 +189,8 @@ void System::saveRichData(std::string PathToSave, bool isJustGeometry) {
     msk.fromVector(toMatrix(forces.forceMask).rowwise().sum());
     richData.addVertexProperty("force_mask", msk);
     richData.addVertexProperty("protein_mask", forces.proteinMask);
-    gcs::VertexData<double> smthingMsk(*mesh);
-    smthingMsk.fromVector(smoothingMask.raw().cast<double>());
+    gcs::VertexData<int> smthingMsk(*mesh);
+    smthingMsk.fromVector(smoothingMask.raw().cast<int>());
     richData.addVertexProperty("smoothing_mask", smthingMsk);
     gcs::VertexData<int> tkr(*mesh);
     tkr.fromVector(thePointTracker.raw().cast<int>());
