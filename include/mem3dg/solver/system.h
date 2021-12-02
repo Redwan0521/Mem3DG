@@ -132,7 +132,8 @@ public:
 
   /// is Smooth
   bool isSmooth;
-  gcs::VertexData<bool> smoothingMask;
+  /// if being mutated
+  gcs::VertexData<bool> mutationMarker;
   /// if has boundary
   bool isOpenMesh;
   /// "the vertex"
@@ -472,7 +473,7 @@ private:
     geodesicDistanceFromPtInd = gcs::VertexData<double>(*mesh, 0);
 
     isSmooth = true;
-    smoothingMask = gc::VertexData<bool>(*mesh, false);
+    mutationMarker = gc::VertexData<bool>(*mesh, false);
     thePointTracker = gc::VertexData<bool>(*mesh, false);
 
     // GC computed properties
@@ -819,6 +820,14 @@ public:
                     double range = 1e10);
 
   /**
+   * @brief global smoothing after mutation of the mesh
+   * @param initStep init guess of time step
+   * @param target target reduce of force norm
+   * @param maxIteration maximum number of iteration
+   */
+  Eigen::Matrix<bool, Eigen::Dynamic, 1>
+  smoothing(double initStep, double target = 0.5, size_t maxInteration = 50);
+  /**
    * @brief pointwise smoothing after mutation of the mesh
    */
   void localSmoothing(const gcs::Vertex &v, std::size_t num = 10,
@@ -831,15 +840,6 @@ public:
    */
   void globalUpdateAfterMutation();
 
-  /**
-   * @brief global smoothing after mutation of the mesh
-   * @param target target reduce of force norm
-   * @param initStep init guess of time step 
-   * @param maxIteration maximum number of iteration
-   */
-  Eigen::Matrix<bool, Eigen::Dynamic, 1>
-  localSmoothing(double target = 0.5, double initStep = 1,
-                  size_t maxInteration = 20);
   /**
    * @brief infer the target surface area of the system
    */

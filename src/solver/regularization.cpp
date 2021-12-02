@@ -220,9 +220,9 @@ bool System::edgeFlip() {
       bool sucess = mesh->flip(e);
       isOrigEdge[e] = false;
       isFlipped = true;
-      meshProcessor.meshMutator.maskAllNeighboring(smoothingMask,
+      meshProcessor.meshMutator.markAllNeighboring(mutationMarker,
                                                    he.tailVertex());
-      meshProcessor.meshMutator.maskAllNeighboring(smoothingMask,
+      meshProcessor.meshMutator.markAllNeighboring(mutationMarker,
                                                    he.tipVertex());
     }
   }
@@ -274,8 +274,8 @@ bool System::growMesh() {
       thePointTracker[newVertex] = false;
       forces.forceMask[newVertex] = gc::Vector3{1, 1, 1};
 
-      meshProcessor.meshMutator.maskAllNeighboring(smoothingMask, newVertex);
-      // smoothingMask[newVertex] = true;
+      meshProcessor.meshMutator.markAllNeighboring(mutationMarker, newVertex);
+      // mutationMarker[newVertex] = true;
 
       isGrown = true;
     } else if (meshProcessor.meshMutator.ifCollapse(e, *vpg)) { // Collapsing
@@ -305,7 +305,7 @@ bool System::growMesh() {
       averageData(geodesicDistanceFromPtInd, vertex1, vertex2, newVertex);
       averageData(proteinDensity, vertex1, vertex2, newVertex);
 
-      meshProcessor.meshMutator.maskAllNeighboring(smoothingMask, newVertex);
+      meshProcessor.meshMutator.markAllNeighboring(mutationMarker, newVertex);
 
       isGrown = true;
     }
@@ -318,7 +318,7 @@ bool System::growMesh() {
 void System::mutateMesh() {
 
   bool isGrown = false, isFlipped = false;
-  smoothingMask.fill(false);
+  mutationMarker.fill(false);
 
   // vertex shift for regularization
   if (meshProcessor.meshMutator.shiftVertex) {
@@ -340,32 +340,33 @@ void System::mutateMesh() {
 
   // globally update quantities
   if (isGrown || isFlipped) {
-    localSmoothing();
     globalUpdateAfterMutation();
   }
 }
 
 Eigen::Matrix<bool, Eigen::Dynamic, 1>
-System::localSmoothing(double target, double initStep, size_t maxIteration) {
+System::smoothing(double initStep, double target, size_t maxIteration) {
 
   // initialize variables
   double stepSize = initStep;
   double pastGradNorm = 1e10;
-  double gradNorm;
   size_t num_iter = 0;
   // compute bending forces
   vpg->refreshQuantities();
   computeMechanicalForces();
+  EigenVectorX3dr pastForceVec = toMatrix(forces.bendingForceVec);
   // initialize smoothingMask
   Eigen::Matrix<bool, Eigen::Dynamic, 1> smoothingMask =
       outlierMask(forces.bendingForce.raw(), 0.5);
+  isSmooth = (smoothingMask.cast<int>().sum() == 0);
   // initialize gradient and compute exit tolerance
-  double tol = computeNorm(toMatrix(forces.bendingForceVec)) * target;
+  double gradNorm = computeNorm(toMatrix(forces.bendingForceVec));
+  double tol = gradNorm * target;
   // std::cout << "number of 1 vs 0: " << smoothingMask.array().sum() << " "
   //           << smoothingMask.rows() << std::endl;
 
-  do {
-    // compute bending force if smoothingMask is true 
+  while (gradNorm > tol && !isSmooth) {
+    // compute bending force if smoothingMask is true
     vpg->refreshQuantities();
     forces.bendingForceVec.fill({0, 0, 0});
     forces.bendingForce.raw().setZero();
@@ -380,7 +381,12 @@ System::localSmoothing(double target, double initStep, size_t maxIteration) {
     // compute norm of the bending force
     gradNorm = computeNorm(toMatrix(forces.bendingForceVec));
     if (gradNorm > pastGradNorm) {
+      toMatrix(vpg->inputVertexPositions) -= pastForceVec * stepSize;
       stepSize /= 2;
+      num_iter++;
+      // std::cout << "num_iter: cut! " << num_iter << std::endl;
+      // std::cout << "Norm diff:  " << gradNorm - pastGradNorm << std::endl;
+      continue;
       // std::cout << "WARNING: localSmoothing: stepSize too large, cut in
       // half!"
       //           << std::endl;
@@ -392,8 +398,13 @@ System::localSmoothing(double target, double initStep, size_t maxIteration) {
     // smoothing step
     vpg->inputVertexPositions += forces.bendingForceVec * stepSize;
     pastGradNorm = gradNorm;
+    pastForceVec = toMatrix(forces.bendingForceVec);
     num_iter++;
-  } while (gradNorm > tol && num_iter < maxIteration);
+    if (num_iter == maxIteration) {
+      mem3dg_runtime_error("smoothing operation exceeds max iteration!");
+      break;
+    }
+  };
 
   return smoothingMask;
 }
