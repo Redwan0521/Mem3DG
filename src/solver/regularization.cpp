@@ -340,15 +340,13 @@ void System::mutateMesh() {
 
   // globally update quantities
   if (isGrown || isFlipped) {
-    // globalSmoothing(smoothingMask);
+    localSmoothing();
     globalUpdateAfterMutation();
   }
-
-  globalSmoothing();
 }
 
 Eigen::Matrix<bool, Eigen::Dynamic, 1>
-System::globalSmoothing(double target, double initStep, size_t maxIteration) {
+System::localSmoothing(double target, double initStep, size_t maxIteration) {
   
   double stepSize = initStep;
   EigenVectorX1d gradient;
@@ -380,7 +378,7 @@ System::globalSmoothing(double target, double initStep, size_t maxIteration) {
     gradNorm = gradient.cwiseAbs().sum();
     if (gradNorm > pastGradNorm) {
       stepSize /= 2;
-      // std::cout << "WARNING: globalSmoothing: stepSize too large, cut in
+      // std::cout << "WARNING: localSmoothing: stepSize too large, cut in
       // half!"
       //           << std::endl;
     }

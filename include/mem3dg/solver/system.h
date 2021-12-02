@@ -836,7 +836,7 @@ public:
    * @param maxIteration maximum number of iteration
    */
   Eigen::Matrix<bool, Eigen::Dynamic, 1>
-  globalSmoothing(double target = 0.5, double initStep = 1,
+  localSmoothing(double target = 0.5, double initStep = 1,
                   size_t maxInteration = 20);
   /**
    * @brief infer the target surface area of the system
