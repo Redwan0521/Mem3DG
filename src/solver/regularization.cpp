@@ -347,45 +347,51 @@ void System::mutateMesh() {
 
 Eigen::Matrix<bool, Eigen::Dynamic, 1>
 System::localSmoothing(double target, double initStep, size_t maxIteration) {
-  
+
+  // initialize variables
   double stepSize = initStep;
-  EigenVectorX1d gradient;
   double pastGradNorm = 1e10;
   double gradNorm;
   size_t num_iter = 0;
-
+  // compute bending forces
   vpg->refreshQuantities();
   computeMechanicalForces();
+  // initialize smoothingMask
   Eigen::Matrix<bool, Eigen::Dynamic, 1> smoothingMask =
       outlierMask(forces.bendingForce.raw(), 0.5);
+  // initialize gradient and compute exit tolerance
+  double tol = computeNorm(toMatrix(forces.bendingForceVec)) * target;
   // std::cout << "number of 1 vs 0: " << smoothingMask.array().sum() << " "
   //           << smoothingMask.rows() << std::endl;
-  auto pos_e = gc::EigenMap<double, 3>(vpg->inputVertexPositions);
-  auto vertexAngleNormal_e = gc::EigenMap<double, 3>(vpg->vertexNormals);
-  gradient = (smoothingMask.cast<double>()).array() *
-             forces.bendingForce.raw().array();
-  double tol = gradient.cwiseAbs().sum() * target;
+
   do {
+    // compute bending force if smoothingMask is true 
     vpg->refreshQuantities();
-    computeMechanicalForces();
-    smoothingMask = outlierMask(forces.bendingForce.raw(), 0.5);
-    // std::cout << "number of 1 vs 0: " << smoothingMask.array().sum() << " "
-    //           << smoothingMask.rows() << std::endl;
-    auto pos_e = gc::EigenMap<double, 3>(vpg->inputVertexPositions);
-    auto vertexAngleNormal_e = gc::EigenMap<double, 3>(vpg->vertexNormals);
-    gradient = (smoothingMask.cast<double>()).array() *
-               forces.bendingForce.raw().array();
-    gradNorm = gradient.cwiseAbs().sum();
+    forces.bendingForceVec.fill({0, 0, 0});
+    forces.bendingForce.raw().setZero();
+    for (std::size_t i = 0; i < mesh->nVertices(); ++i) {
+      if (smoothingMask[i]) {
+        computeMechanicalForces(i);
+      }
+    }
+    // recompute smoothing Mask
+    // smoothingMask = outlierMask(forces.bendingForce.raw(), 0.5);
+
+    // compute norm of the bending force
+    gradNorm = computeNorm(toMatrix(forces.bendingForceVec));
     if (gradNorm > pastGradNorm) {
       stepSize /= 2;
       // std::cout << "WARNING: localSmoothing: stepSize too large, cut in
       // half!"
       //           << std::endl;
     }
-    pos_e.array() +=
-        rowwiseScalarProduct(gradient, vertexAngleNormal_e).array() * stepSize;
-    pastGradNorm = gradNorm;
+    // std::cout << "number of 1 vs 0: " << smoothingMask.array().sum() << " "
+    //           << smoothingMask.rows() << std::endl;
     // std::cout << "gradient:  " << gradNorm << std::endl;
+
+    // smoothing step
+    vpg->inputVertexPositions += forces.bendingForceVec * stepSize;
+    pastGradNorm = gradNorm;
     num_iter++;
   } while (gradNorm > tol && num_iter < maxIteration);
 
