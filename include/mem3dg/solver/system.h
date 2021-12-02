@@ -686,6 +686,8 @@ public:
    * @brief Compute mechanical forces
    */
   void computeMechanicalForces();
+  void computeMechanicalForces(size_t i);
+  void computeMechanicalForces(gcs::Vertex &v);
 
   /**
    * @brief Compute external force component of the system
