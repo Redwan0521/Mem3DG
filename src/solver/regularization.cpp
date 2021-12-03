@@ -346,6 +346,7 @@ void System::mutateMesh() {
 
 Eigen::Matrix<bool, Eigen::Dynamic, 1>
 System::smoothenMesh(double initStep, double target, size_t maxIteration) {
+  // require nonzero bending rigidity in parameters
   if (Kb.raw().sum() == 0){
     mem3dg_runtime_error("Bending rigidity has to be nonzero to smoothen mesh!");
   }
@@ -364,8 +365,6 @@ System::smoothenMesh(double initStep, double target, size_t maxIteration) {
   // initialize gradient and compute exit tolerance
   double gradNorm = computeNorm(toMatrix(forces.bendingForceVec));
   double tol = gradNorm * target;
-  // std::cout << "number of 1 vs 0: " << smoothingMask.array().sum() << " "
-  //           << smoothingMask.rows() << std::endl;
 
   while (gradNorm > tol && !isSmooth) {
     // compute bending force if smoothingMask is true
@@ -377,26 +376,15 @@ System::smoothenMesh(double initStep, double target, size_t maxIteration) {
         computeMechanicalForces(i);
       }
     }
-    // recompute smoothing Mask
-    // smoothingMask = outlierMask(forces.bendingForce.raw(), 0.5);
-
     // compute norm of the bending force
     gradNorm = computeNorm(toMatrix(forces.bendingForceVec));
+    // recover the position and cut the step size in half
     if (gradNorm > pastGradNorm) {
       toMatrix(vpg->inputVertexPositions) -= pastForceVec * stepSize;
       stepSize /= 2;
       num_iter++;
-      // std::cout << "num_iter: cut! " << num_iter << std::endl;
-      // std::cout << "Norm diff:  " << gradNorm - pastGradNorm << std::endl;
       continue;
-      // std::cout << "WARNING: localSmoothing: stepSize too large, cut in
-      // half!"
-      //           << std::endl;
     }
-    // std::cout << "number of 1 vs 0: " << smoothingMask.array().sum() << " "
-    //           << smoothingMask.rows() << std::endl;
-    // std::cout << "gradient:  " << gradNorm << std::endl;
-
     // smoothing step
     vpg->inputVertexPositions += forces.bendingForceVec * stepSize;
     pastGradNorm = gradNorm;
