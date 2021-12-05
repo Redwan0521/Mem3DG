@@ -825,8 +825,8 @@ void Integrator::getForces() {
   if (system.parameters.dpd.gamma != 0) {
     system.computeDPDForces(timeStep);
     dpdForce = rowwiseDotProduct(
-        system.forces.maskForce(toMatrix(system.forces.dampingForce) +
-                                toMatrix(system.forces.stochasticForce)),
+        system.forces.maskForce(toMatrix(system.forces.dampingForceVec) +
+                                toMatrix(system.forces.stochasticForceVec)),
         toMatrix(system.vpg->vertexNormals));
   }
 

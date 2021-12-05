@@ -428,10 +428,8 @@ EigenVectorX1d System::computeChemicalPotential() {
 std::tuple<EigenVectorX3dr, EigenVectorX3dr>
 System::computeDPDForces(double dt) {
 
-  auto dampingForce_e = EigenMap<double, 3>(forces.dampingForce);
-  auto stochasticForce_e = EigenMap<double, 3>(forces.stochasticForce);
-
-  // Reset forces to zero
+  auto dampingForce_e = toMatrix(forces.dampingForceVec);
+  auto stochasticForce_e = toMatrix(forces.stochasticForceVec);
   dampingForce_e.setZero();
   stochasticForce_e.setZero();
 
@@ -452,17 +450,15 @@ System::computeDPDForces(double dt) {
     gc::Vector3 dVel12 = velocity[v1] - velocity[v2];
     gc::Vector3 dPos12_n = (pos[v1] - pos[v2]).normalize();
 
-    if (parameters.dpd.gamma != 0) {
-      gc::Vector3 df =
-          parameters.dpd.gamma * (gc::dot(dVel12, dPos12_n) * dPos12_n);
-      forces.dampingForce[v1] -= df;
-      forces.dampingForce[v2] += df;
-    }
+    gc::Vector3 df =
+        parameters.dpd.gamma * (gc::dot(dVel12, dPos12_n) * dPos12_n);
+    forces.dampingForceVec[v1] -= df;
+    forces.dampingForceVec[v2] += df;
 
     if (sigma != 0) {
       double noise = normal_dist(rng);
-      forces.stochasticForce[v1] += noise * dPos12_n;
-      forces.stochasticForce[v2] -= noise * dPos12_n;
+      forces.stochasticForceVec[v1] += noise * dPos12_n;
+      forces.stochasticForceVec[v2] -= noise * dPos12_n;
     }
 
     // gc::Vector3 dVel21 = vel[v2] - vel[v1];
@@ -475,6 +471,8 @@ System::computeDPDForces(double dt) {
     //           << std::endl;
   }
 
+  dampingForce_e = forces.maskForce(dampingForce_e);
+  stochasticForce_e = forces.maskForce(stochasticForce_e);
   return std::tie(dampingForce_e, stochasticForce_e);
 }
 
