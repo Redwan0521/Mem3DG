@@ -112,6 +112,11 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
                                R"delim(
           option to scale time step according to mesh size
       )delim");
+  velocityverlet.def_readwrite("isCapEnergy",
+                               &VelocityVerlet::isCapEnergy,
+                               R"delim(
+          option to exit if exceed initial energy cap
+      )delim");
   velocityverlet.def_readwrite("outputDirectory",
                                &VelocityVerlet::outputDirectory,
                                R"delim(

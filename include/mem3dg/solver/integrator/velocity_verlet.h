@@ -32,6 +32,7 @@ private:
   double initialTotalEnergy;
 
 public:
+  bool isCapEnergy = true;
   VelocityVerlet(System &system_, double characteristicTimeStep_,
                  double totalTime_, double savePeriod_, double tolerance_,
                  std::string outputDirectory_)
