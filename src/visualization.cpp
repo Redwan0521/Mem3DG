@@ -646,6 +646,10 @@ polyscope::SurfaceMesh *registerSurfaceMesh(std::string plyName,
       //         ptrRichData->getVertexProperty<double>("mean_curvature"))
       //     ->setMapRange(std::make_pair(-2.54, 10.29));
     }
+    if (options.velocity) {
+      polyscopeMesh->addVertexScalarQuantity(
+          "velocity", ptrRichData->getVertexProperty<double>("velocity"));
+    }
     if (options.gauss_curvature) {
       polyscopeMesh->addVertexScalarQuantity(
           "gauss_curvature",
@@ -765,6 +769,12 @@ polyscope::SurfaceMesh *registerSurfaceMesh(std::string plyName,
           ->addVertexScalarQuantity(
               "mean_curvature",
               ptrRichData->getVertexProperty<double>("mean_curvature"))
+          ->setMapRange(std::make_pair(mapMinLim, mapMaxLim));
+    }
+    if (options.velocity) {
+      polyscopeMesh
+          ->addVertexScalarQuantity(
+              "velocity", ptrRichData->getVertexProperty<double>("velocity"))
           ->setMapRange(std::make_pair(mapMinLim, mapMaxLim));
     }
     if (options.gauss_curvature) {
