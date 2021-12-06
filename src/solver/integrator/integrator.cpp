@@ -121,7 +121,8 @@ double Integrator::backtrack(
       std::cout << "\nError backtrace using alpha: \n" << std::endl;
       lineSearchErrorBacktrace(alpha, initial_pos, initial_protein, previousE,
                                true);
-      std::cout << "\nError backtrace using characteristicTimeStep: \n" << std::endl;
+      std::cout << "\nError backtrace using characteristicTimeStep: \n"
+                << std::endl;
       lineSearchErrorBacktrace(characteristicTimeStep,
                                toMatrix(system.vpg->inputVertexPositions),
                                initial_protein, previousE, true);
@@ -839,10 +840,9 @@ void Integrator::getForces() {
   system.computePhysicalForcing();
   if (system.parameters.dpd.gamma != 0) {
     system.computeDPDForces(timeStep);
-    dpdForce = rowwiseDotProduct(
-        system.forces.maskForce(toMatrix(system.forces.dampingForceVec) +
-                                toMatrix(system.forces.stochasticForceVec)),
-        toMatrix(system.vpg->vertexNormals));
+    dpdForce = system.forces.addNormal(
+        system.forces.ontoNormal(toMatrix(system.forces.dampingForceVec) +
+                                 toMatrix(system.forces.stochasticForceVec)));
   }
 
   // if (!f.mesh->hasBoundary()) {

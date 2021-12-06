@@ -53,7 +53,7 @@ protected:
   /// last time processing mesh
   double lastProcessMesh;
   /// numerical dissipative particle dynamics force to the system
-  Eigen::Matrix<double, Eigen::Dynamic, 1> dpdForce;
+  Eigen::Matrix<double, Eigen::Dynamic, 3> dpdForce;
   /// Starting time of the simulation
   double initialTime;
   /// Flag of success of the simulation
@@ -141,7 +141,7 @@ public:
     volumeDifference = 1e10;
 
     // Initialize system summarized forces
-    dpdForce.resize(system.mesh->nVertices(), 1);
+    dpdForce.resize(system.mesh->nVertices(), 3);
     dpdForce.setZero();
   }
 

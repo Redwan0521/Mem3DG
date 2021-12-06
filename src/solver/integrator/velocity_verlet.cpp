@@ -127,12 +127,7 @@ void VelocityVerlet::status() {
   getForces();
 
   // Compute total pressure
-  newTotalPressure =
-      system.forces.addNormal(dpdForce.array() /
-                              system.vpg->vertexDualAreas.raw().array()) +
-      (toMatrix(system.forces.mechanicalForceVec).array().colwise() /
-       system.vpg->vertexDualAreas.raw().array())
-          .matrix();
+  newTotalPressure = dpdForce + toMatrix(system.forces.mechanicalForceVec);
 
   // compute the contraint error
   areaDifference = abs(system.surfaceArea / system.parameters.tension.At - 1);
