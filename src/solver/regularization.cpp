@@ -460,6 +460,12 @@ void System::localSmoothing(const gcs::Halfedge &he, std::size_t num,
 }
 
 void System::globalUpdateAfterMutation() {
+  // update the velocity
+  double oldKE = energy.kineticEnergy;
+  velocity *= pow(oldKE / computeKineticEnergy(), 0.5);
+  // std::cout << "kinetic energy increases by " << computeKineticEnergy() - oldKE
+  //           << "from " << oldKE << "to " << energy.kineticEnergy << std::endl;
+
   // // Update the distribution matrix when topology changes
   // if (P.eta != 0) {
   //   D = vpg->d0.transpose().cwiseAbs() / 2;

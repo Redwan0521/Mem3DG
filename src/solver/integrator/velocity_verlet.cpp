@@ -158,10 +158,14 @@ void VelocityVerlet::status() {
   finitenessErrorBacktrack();
 
   // check energy increase
-  if (system.energy.totalEnergy > 1.05 * initialTotalEnergy) {
-    std::cout
-        << "\nVelocity Verlet: increasing system energy, simulation stopped!"
-        << std::endl;
+  if (system.energy.totalEnergy - system.energy.proteinInteriorPenalty >
+      1.05 * initialTotalEnergy) {
+    std::cout << "\nVelocity Verlet: increasing system energy, simulation "
+                 "stopped! E_total="
+              << system.energy.totalEnergy -
+                     system.energy.proteinInteriorPenalty
+              << ", E_init=" << initialTotalEnergy << " (w/o inPE)"
+              << std::endl;
     EXIT = true;
     SUCCESS = false;
   }

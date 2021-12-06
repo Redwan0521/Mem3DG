@@ -52,6 +52,7 @@ public:
     newTotalPressure.setZero();
 
     initialTotalEnergy = system.computeTotalEnergy();
+    initialTotalEnergy -= system.energy.proteinInteriorPenalty;
   }
 
   /**
