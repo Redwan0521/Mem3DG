@@ -845,25 +845,6 @@ void Integrator::finitenessErrorBacktrack() {
   }
 }
 
-void Integrator::getForces() {
-  system.computePhysicalForcing();
-  if (system.parameters.dpd.gamma != 0) {
-    system.computeDPDForces(timeStep);
-    dpdForce = system.forces.addNormal(
-        system.forces.ontoNormal(toMatrix(system.forces.dampingForceVec) +
-                                 toMatrix(system.forces.stochasticForceVec)));
-  }
-
-  // if (!f.mesh->hasBoundary()) {
-  //   removeTranslation(physicalForceVec);
-  //   removeRotation(toMatrix(f.vpg->inputVertexPositions),
-  //                  physicalForceVec);
-  //   // removeTranslation(DPDPressure);
-  //   // removeRotation(toMatrix(f.vpg->inputVertexPositions),
-  //   // DPDPressure);
-  // }
-}
-
 void Integrator::pressureConstraintThreshold(bool &EXIT,
                                              const bool isAugmentedLagrangian,
                                              const double dArea,

@@ -692,9 +692,10 @@ public:
   // ================        Pressure        ==================
   // ==========================================================
   /**
-   * @brief Compute all forcing of the system
+   * @brief Compute all forcing of the system, include DPD if given time step
    */
   void computePhysicalForcing();
+  void computePhysicalForcing(double timeStep);
 
   /**
    * @brief Compute chemical potential of the system

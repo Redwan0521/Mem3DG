@@ -441,17 +441,19 @@ System::computeDPDForces(double dt) {
     gcs::Vertex v2 = he.next().vertex();
 
     gc::Vector3 dVel12 = velocity[v1] - velocity[v2];
-    gc::Vector3 dPos12_n = (pos[v1] - pos[v2]).normalize();
+    gc::Vector3 direction = (pos[v1] - pos[v2]).normalize();
+    // gc::Vector3 direction =
+    //     (vpg->vertexNormals[v1] + vpg->vertexNormals[v2]).normalize();
 
     gc::Vector3 df =
-        parameters.dpd.gamma * (gc::dot(dVel12, dPos12_n) * dPos12_n);
+        parameters.dpd.gamma * (gc::dot(dVel12, direction) * direction);
     forces.dampingForceVec[v1] -= df;
     forces.dampingForceVec[v2] += df;
 
     if (sigma != 0) {
       double noise = normal_dist(rng);
-      forces.stochasticForceVec[v1] += noise * dPos12_n;
-      forces.stochasticForceVec[v2] -= noise * dPos12_n;
+      forces.stochasticForceVec[v1] += noise * direction;
+      forces.stochasticForceVec[v2] -= noise * direction;
     }
 
     // gc::Vector3 dVel21 = vel[v2] - vel[v1];
@@ -463,9 +465,10 @@ System::computeDPDForces(double dt) {
     //           << " == " << -gamma * (gc::dot(dVel21, dPos21_n) * dPos21_n)
     //           << std::endl;
   }
-
-  dampingForce_e = forces.maskForce(dampingForce_e);
-  stochasticForce_e = forces.maskForce(stochasticForce_e);
+  dampingForce_e =
+      forces.maskForce(forces.addNormal(forces.ontoNormal(dampingForce_e)));
+  stochasticForce_e =
+      forces.maskForce(forces.addNormal(forces.ontoNormal(stochasticForce_e)));
   return std::tie(dampingForce_e, stochasticForce_e);
 }
 
@@ -609,6 +612,24 @@ void System::computePhysicalForcing() {
   chemErrorNorm = parameters.variation.isProteinVariation
                       ? computeNorm(forces.chemicalPotential.raw())
                       : 0;
+}
+
+void System::computePhysicalForcing(double timeStep) {
+  computePhysicalForcing();
+  if (parameters.variation.isShapeVariation && parameters.dpd.gamma != 0) {
+    computeDPDForces(timeStep);
+    forces.mechanicalForceVec +=
+        forces.dampingForceVec + forces.stochasticForceVec;
+  }
+
+  // if (!f.mesh->hasBoundary()) {
+  //   removeTranslation(physicalForceVec);
+  //   removeRotation(toMatrix(f.vpg->inputVertexPositions),
+  //                  physicalForceVec);
+  //   // removeTranslation(DPDPressure);
+  //   // removeRotation(toMatrix(f.vpg->inputVertexPositions),
+  //   // DPDPressure);
+  // }
 }
 
 } // namespace solver

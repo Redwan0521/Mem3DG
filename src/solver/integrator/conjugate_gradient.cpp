@@ -149,7 +149,7 @@ void ConjugateGradient::status() {
   auto physicalForce = toMatrix(system.forces.mechanicalForce);
 
   // compute summerized forces
-  getForces();
+  system.computePhysicalForcing(timeStep);
 
   // compute the area contraint error
   areaDifference = abs(system.surfaceArea / system.parameters.tension.At - 1);

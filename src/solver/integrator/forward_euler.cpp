@@ -128,7 +128,7 @@ void Euler::checkParameters() {
 
 void Euler::status() {
   // compute summerized forces
-  getForces();
+  system.computePhysicalForcing(timeStep);
 
   // compute the contraint error
   areaDifference = abs(system.surfaceArea / system.parameters.tension.At - 1);

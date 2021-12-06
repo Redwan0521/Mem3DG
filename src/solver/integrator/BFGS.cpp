@@ -130,7 +130,7 @@ void BFGS::status() {
   auto physicalForce = toMatrix(system.forces.mechanicalForce);
 
   // compute summerized forces
-  getForces();
+  system.computePhysicalForcing(timeStep);
 
   // update
   if (system.time != initialTime || ifRestart) {
