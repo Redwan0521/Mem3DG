@@ -115,11 +115,11 @@ bool VelocityVerlet::integrate() {
 }
 
 void VelocityVerlet::checkParameters() {
-  system.meshProcessor.meshMutator.summarizeStatus();
-  if (system.meshProcessor.isMeshMutate) {
-    mem3dg_runtime_error(
-        "Mesh mutations are currently not supported for Velocity Verlet!");
-  }
+  // system.meshProcessor.meshMutator.summarizeStatus();
+  // if (system.meshProcessor.isMeshMutate) {
+  //   mem3dg_runtime_error(
+  //       "Mesh mutations are currently not supported for Velocity Verlet!");
+  // }
 }
 
 void VelocityVerlet::status() {
