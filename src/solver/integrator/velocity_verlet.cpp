@@ -123,9 +123,6 @@ void VelocityVerlet::checkParameters() {
 }
 
 void VelocityVerlet::status() {
-  // compute summerized forces
-  system.computePhysicalForcing(timeStep);
-
   // compute the contraint error
   areaDifference = abs(system.surfaceArea / system.parameters.tension.At - 1);
   volumeDifference = (system.parameters.osmotic.isPreferredVolume)
@@ -177,12 +174,19 @@ void VelocityVerlet::march() {
 
   double hdt = 0.5 * timeStep, hdt2 = hdt * timeStep;
 
-  // time stepping on vertex position
+  // stepping on vertex position
   system.vpg->inputVertexPositions +=
       system.velocity * timeStep + hdt2 * pastMechanicalForceVec;
+
+  // compute summerized forces 
+  system.computePhysicalForcing(timeStep);
+
+  // stepping on velocity
   system.velocity +=
       (pastMechanicalForceVec + system.forces.mechanicalForceVec) * hdt;
   pastMechanicalForceVec = system.forces.mechanicalForceVec;
+
+  // stepping on time
   system.time += timeStep;
 
   // time stepping on protein density
