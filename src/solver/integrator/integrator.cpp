@@ -29,15 +29,14 @@ namespace mem3dg {
 namespace solver {
 namespace integrator {
 
-void Integrator::updateAdaptiveCharacteristicStep() {
+double Integrator::updateAdaptiveCharacteristicStep() {
   double currentMinimumSize = system.vpg->edgeLengths.raw().minCoeff();
   double currentMaximumForce =
       system.parameters.variation.isShapeVariation
           ? toMatrix(system.forces.mechanicalForce).cwiseAbs().maxCoeff()
           : toMatrix(system.forces.chemicalPotential).cwiseAbs().maxCoeff();
-  characteristicTimeStep =
-      (dt_size2_ratio * currentMinimumSize * currentMinimumSize) *
-      (initialMaximumForce / currentMaximumForce);
+  return (dt_size2_ratio * currentMinimumSize * currentMinimumSize) *
+         (initialMaximumForce / currentMaximumForce);
 }
 
 double Integrator::backtrack(

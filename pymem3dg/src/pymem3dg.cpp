@@ -92,6 +92,12 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
       R"delim(
         Velocity Verlet integrator constructor
       )delim");
+
+  velocityverlet.def_readwrite("verbosity", &VelocityVerlet::verbosity,
+                      R"delim(
+           verbosity level of integrator
+      )delim");
+
   velocityverlet.def("integrate", &VelocityVerlet::integrate,
                      R"delim(
           integrate 

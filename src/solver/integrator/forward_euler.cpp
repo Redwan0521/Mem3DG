@@ -168,7 +168,7 @@ void Euler::march() {
 
   // adjust time step if adopt adaptive time step based on mesh size
   if (isAdaptiveStep) {
-    updateAdaptiveCharacteristicStep();
+    characteristicTimeStep = updateAdaptiveCharacteristicStep();
   }
 
   // time stepping on vertex position

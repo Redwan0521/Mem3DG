@@ -309,10 +309,10 @@ public:
                                 const Energy &previousE, bool runAll = false);
 
   /**
-   * @brief update adaptive time step
+   * @brief get adaptive characteristic time step
    * @return
    */
-  void updateAdaptiveCharacteristicStep();
+  double updateAdaptiveCharacteristicStep();
 };
 } // namespace integrator
 } // namespace solver
