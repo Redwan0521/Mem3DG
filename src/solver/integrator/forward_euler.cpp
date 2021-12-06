@@ -130,7 +130,7 @@ void Euler::status() {
   // compute summerized forces
   getForces();
 
-  // compute the area contraint error
+  // compute the contraint error
   areaDifference = abs(system.surfaceArea / system.parameters.tension.At - 1);
   volumeDifference = (system.parameters.osmotic.isPreferredVolume)
                          ? abs(system.volume / system.parameters.osmotic.Vt - 1)

@@ -93,6 +93,26 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
         Velocity Verlet integrator constructor
       )delim");
 
+  velocityverlet.def_readwrite("updateGeodesicsPeriod", &VelocityVerlet::updateGeodesicsPeriod,
+                      R"delim(
+          period of update geodesics
+      )delim");
+  velocityverlet.def_readwrite("processMeshPeriod", &VelocityVerlet::processMeshPeriod,
+                      R"delim(
+          period of processing mesh
+      )delim");
+  velocityverlet.def_readwrite("trajFileName", &VelocityVerlet::trajFileName,
+                      R"delim(
+          name of the trajectory file 
+      )delim");
+  velocityverlet.def_readwrite("isAdaptiveStep", &VelocityVerlet::isAdaptiveStep,
+                      R"delim(
+          option to scale time step according to mesh size
+      )delim");
+  velocityverlet.def_readwrite("outputDirectory", &VelocityVerlet::outputDirectory,
+                      R"delim(
+        collapse small triangles
+      )delim");
   velocityverlet.def_readwrite("verbosity", &VelocityVerlet::verbosity,
                       R"delim(
            verbosity level of integrator
