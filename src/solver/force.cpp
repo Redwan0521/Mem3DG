@@ -362,7 +362,7 @@ EigenVectorX3dr System::prescribeExternalForce() {
   return toMatrix(forces.externalForceVec);
 }
 
-EigenVectorX1d System::computeChemicalPotential() {
+void System::computeChemicalPotentials() {
   gcs::VertexData<double> dH0dphi(*mesh, 0);
   gcs::VertexData<double> dKbdphi(*mesh, 0);
   auto meanCurvDiff = (vpg->vertexMeanCurvatures.raw().array() /
@@ -403,16 +403,11 @@ EigenVectorX1d System::computeChemicalPotential() {
     forces.diffusionPotential.raw() = forces.maskProtein(
         -parameters.dirichlet.eta * vpg->cotanLaplacian * proteinDensity.raw());
 
-  if (parameters.proteinDistribution.lambdaPhi!= 0)
+  if (parameters.proteinDistribution.lambdaPhi != 0)
     forces.interiorPenaltyPotential.raw() =
         forces.maskProtein(parameters.proteinDistribution.lambdaPhi *
                            (1 / proteinDensity.raw().array() -
                             1 / (1 - proteinDensity.raw().array())));
-  forces.chemicalPotential.raw() =
-      forces.adsorptionPotential.raw() + forces.aggregationPotential.raw() +
-      forces.bendingPotential.raw() + forces.diffusionPotential.raw() +
-      forces.interiorPenaltyPotential.raw();
-
   // F.chemicalPotential.raw().array() =
   //     -vpg->vertexDualAreas.raw().array() *
   //     (P.adsorption.epsilon - 2 * Kb.raw().array() * meanCurvDiff *
@@ -421,8 +416,6 @@ EigenVectorX1d System::computeChemicalPotential() {
   // F.chemicalPotential.raw().array() +=
   //     P.proteinDistribution.lambdaPhi * (1 / proteinDensity.raw().array() -
   //                    1 / (1 - proteinDensity.raw().array()));
-
-  return forces.chemicalPotential.raw();
 }
 
 std::tuple<EigenVectorX3dr, EigenVectorX3dr>
@@ -583,6 +576,7 @@ void System::computePhysicalForcing() {
   forces.diffusionPotential.raw().setZero();
   forces.bendingPotential.raw().setZero();
   forces.adsorptionPotential.raw().setZero();
+  forces.aggregationPotential.raw().setZero();
   forces.interiorPenaltyPotential.raw().setZero();
 
   if (parameters.variation.isShapeVariation) {
@@ -599,7 +593,11 @@ void System::computePhysicalForcing() {
   }
 
   if (parameters.variation.isProteinVariation) {
-    computeChemicalPotential();
+    computeChemicalPotentials();
+    forces.chemicalPotential =
+        forces.adsorptionPotential + forces.aggregationPotential +
+        forces.bendingPotential + forces.diffusionPotential +
+        forces.interiorPenaltyPotential;
   }
 
   // compute the mechanical error norm

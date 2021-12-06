@@ -699,7 +699,7 @@ public:
   /**
    * @brief Compute chemical potential of the system
    */
-  EigenVectorX1d computeChemicalPotential();
+  void computeChemicalPotentials();
 
   /**
    * @brief Compute mechanical forces

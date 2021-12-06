@@ -758,6 +758,12 @@ void Integrator::finitenessErrorBacktrack() {
       if (!std::isfinite(toMatrix(system.forces.capillaryForceVec).norm())) {
         std::cout << "Capillary force is not finite!" << std::endl;
       }
+      if (!std::isfinite(toMatrix(system.forces.adsorptionForceVec).norm())) {
+        std::cout << "Adsorption force is not finite!" << std::endl;
+      }
+      if (!std::isfinite(toMatrix(system.forces.aggregationForceVec).norm())) {
+        std::cout << "Aggregation force is not finite!" << std::endl;
+      }
       if (!std::isfinite(toMatrix(system.forces.bendingForceVec).norm())) {
         std::cout << "Bending force is not finite!" << std::endl;
       }
@@ -796,6 +802,9 @@ void Integrator::finitenessErrorBacktrack() {
       }
       if (!std::isfinite(toMatrix(system.forces.adsorptionPotential).norm())) {
         std::cout << "Adsorption potential is not finite!" << std::endl;
+      }
+      if (!std::isfinite(toMatrix(system.forces.aggregationPotential).norm())) {
+        std::cout << "Aggregation potential is not finite!" << std::endl;
       }
     }
   }
