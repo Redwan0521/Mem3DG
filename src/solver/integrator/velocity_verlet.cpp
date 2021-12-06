@@ -70,13 +70,31 @@ bool VelocityVerlet::integrate() {
       saveData();
     }
 
+    // Process mesh every tProcessMesh period
+    if (system.time - lastProcessMesh > processMeshPeriod) {
+      lastProcessMesh = system.time;
+      system.mutateMesh();
+      system.smoothenMesh(timeStep);
+      system.updateConfigurations(false);
+    }
+
+    // update geodesics every tUpdateGeodesics period
+    if (system.time - lastUpdateGeodesics > updateGeodesicsPeriod) {
+      lastUpdateGeodesics = system.time;
+      system.updateConfigurations(true);
+    }
+
     // break loop if EXIT flag is on
     if (EXIT) {
       break;
     }
 
     // step forward
-    march();
+    if (system.time == lastProcessMesh || system.time == lastUpdateGeodesics) {
+      system.time += 1e-10 * characteristicTimeStep;
+    } else {
+      march();
+    }
   }
 
   // return if physical simulation is sucessful
@@ -181,10 +199,9 @@ void VelocityVerlet::status() {
 void VelocityVerlet::march() {
   // adjust time step if adopt adaptive time step based on mesh size
   if (isAdaptiveStep) {
-    updateAdaptiveCharacteristicStep();
+    characteristicTimeStep = updateAdaptiveCharacteristicStep();
+    timeStep = characteristicTimeStep;
   }
-
-  timeStep = characteristicTimeStep;
 
   double hdt = 0.5 * timeStep, hdt2 = hdt * timeStep;
 
