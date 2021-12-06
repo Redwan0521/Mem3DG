@@ -173,7 +173,8 @@ void Euler::march() {
 
   // time stepping on vertex position
   if (isBacktrack) {
-    double timeStep_mech, timeStep_chem = characteristicTimeStep;
+    double timeStep_mech,
+        timeStep_chem = std::numeric_limits<double>::infinity();
     if (system.parameters.variation.isShapeVariation)
       timeStep_mech = mechanicalBacktrack(system.energy.potentialEnergy,
                                           toMatrix(system.velocity), rho, c1);

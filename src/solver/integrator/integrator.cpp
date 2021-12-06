@@ -118,8 +118,13 @@ double Integrator::backtrack(
       std::cout << "\nbacktrack: line search failure! Simulation "
                    "stopped. \n"
                 << std::endl;
+      std::cout << "\nError backtrace using alpha: \n" << std::endl;
       lineSearchErrorBacktrace(alpha, initial_pos, initial_protein, previousE,
                                true);
+      std::cout << "\nError backtrace using characteristicTimeStep: \n" << std::endl;
+      lineSearchErrorBacktrace(characteristicTimeStep,
+                               toMatrix(system.vpg->inputVertexPositions),
+                               initial_protein, previousE, true);
       EXIT = true;
       SUCCESS = false;
       break;
@@ -217,7 +222,13 @@ double Integrator::chemicalBacktrack(
       std::cout << "\nchemicalBacktrack: line search failure! Simulation "
                    "stopped. \n"
                 << std::endl;
+      std::cout << "\nError backtrace using alpha: \n" << std::endl;
       lineSearchErrorBacktrace(alpha,
+                               toMatrix(system.vpg->inputVertexPositions),
+                               initial_protein, previousE, true);
+      std::cout << "\nError backtrace using characteristicTimeStep: \n"
+                << std::endl;
+      lineSearchErrorBacktrace(characteristicTimeStep,
                                toMatrix(system.vpg->inputVertexPositions),
                                initial_protein, previousE, true);
       EXIT = true;
@@ -310,8 +321,13 @@ double Integrator::mechanicalBacktrack(
       std::cout << "\nmechanicalBacktrack: line search failure! Simulation "
                    "stopped. \n"
                 << std::endl;
+      std::cout << "\nError backtrace using alpha: \n" << std::endl;
       lineSearchErrorBacktrace(alpha, initial_pos, system.proteinDensity.raw(),
                                previousE, true);
+      std::cout << "\nError backtrace using characterisiticTimeStep: \n"
+                << std::endl;
+      lineSearchErrorBacktrace(characteristicTimeStep, initial_pos,
+                               system.proteinDensity.raw(), previousE, true);
       EXIT = true;
       SUCCESS = false;
       break;
