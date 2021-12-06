@@ -420,14 +420,10 @@ void System::computeChemicalPotentials() {
 
 std::tuple<EigenVectorX3dr, EigenVectorX3dr>
 System::computeDPDForces(double dt) {
-
   auto dampingForce_e = toMatrix(forces.dampingForceVec);
   auto stochasticForce_e = toMatrix(forces.stochasticForceVec);
   dampingForce_e.setZero();
   stochasticForce_e.setZero();
-
-  // alias positions
-  const auto &pos = vpg->inputVertexPositions;
 
   // std::default_random_engine random_generator;
   // gcs::EdgeData<double> random_var(mesh);
@@ -441,7 +437,9 @@ System::computeDPDForces(double dt) {
     gcs::Vertex v2 = he.next().vertex();
 
     gc::Vector3 dVel12 = velocity[v1] - velocity[v2];
-    gc::Vector3 direction = (pos[v1] - pos[v2]).normalize();
+    gc::Vector3 direction =
+        (vpg->inputVertexPositions[v1] - vpg->inputVertexPositions[v2])
+            .normalize();
     // gc::Vector3 direction =
     //     (vpg->vertexNormals[v1] + vpg->vertexNormals[v2]).normalize();
 
@@ -566,6 +564,9 @@ void System::computePhysicalForcing() {
   forces.adsorptionForceVec.fill({0, 0, 0});
   forces.aggregationForceVec.fill({0, 0, 0});
   forces.externalForceVec.fill({0, 0, 0});
+
+  forces.dampingForceVec.fill({0, 0, 0});
+  forces.stochasticForceVec.fill({0, 0, 0});
 
   forces.bendingForce.raw().setZero();
   forces.capillaryForce.raw().setZero();
