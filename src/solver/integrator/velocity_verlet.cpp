@@ -152,16 +152,18 @@ void VelocityVerlet::status() {
   finitenessErrorBacktrack();
 
   // check energy increase
-  if (system.energy.totalEnergy - system.energy.proteinInteriorPenalty >
-      1.05 * initialTotalEnergy) {
-    std::cout << "\nVelocity Verlet: increasing system energy, simulation "
-                 "stopped! E_total="
-              << system.energy.totalEnergy -
-                     system.energy.proteinInteriorPenalty
-              << ", E_init=" << initialTotalEnergy << " (w/o inPE)"
-              << std::endl;
-    EXIT = true;
-    SUCCESS = false;
+  if (isCapEnergy) {
+    if (system.energy.totalEnergy - system.energy.proteinInteriorPenalty >
+        1.05 * initialTotalEnergy) {
+      std::cout << "\nVelocity Verlet: increasing system energy, simulation "
+                   "stopped! E_total="
+                << system.energy.totalEnergy -
+                       system.energy.proteinInteriorPenalty
+                << ", E_init=" << initialTotalEnergy << " (w/o inPE)"
+                << std::endl;
+      EXIT = true;
+      SUCCESS = false;
+    }
   }
 }
 
@@ -178,7 +180,7 @@ void VelocityVerlet::march() {
   system.vpg->inputVertexPositions +=
       system.velocity * timeStep + hdt2 * pastMechanicalForceVec;
 
-  // compute summerized forces 
+  // compute summerized forces
   system.computePhysicalForcing(timeStep);
 
   // stepping on velocity
