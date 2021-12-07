@@ -422,13 +422,9 @@ void System::computeChemicalPotentials() {
   //                    1 / (1 - proteinDensity.raw().array()));
 }
 
-std::tuple<EigenVectorX3dr, EigenVectorX3dr>
-System::computeDPDForces(double dt) {
-  auto dampingForce_e = toMatrix(forces.dampingForceVec);
-  auto stochasticForce_e = toMatrix(forces.stochasticForceVec);
-  dampingForce_e.setZero();
-  stochasticForce_e.setZero();
-
+void System::computeDPDForces(double dt) {
+  toMatrix(forces.dampingForceVec).setZero();
+  toMatrix(forces.stochasticForceVec).setZero();
   // std::default_random_engine random_generator;
   // gcs::EdgeData<double> random_var(mesh);
   double sigma = sqrt(2 * parameters.dpd.gamma * mem3dg::constants::kBoltzmann *
@@ -452,10 +448,6 @@ System::computeDPDForces(double dt) {
     forces.dampingForceVec[v1] -= df;
     forces.dampingForceVec[v2] += df;
 
-    // add normal damping
-    forces.dampingForceVec[v1] -= parameters.gamma * velocity[v1];
-    forces.dampingForceVec[v2] -= parameters.gamma * velocity[v2];
-
     if (sigma != 0) {
       double noise = normal_dist(rng);
       forces.stochasticForceVec[v1] += noise * direction;
@@ -471,13 +463,16 @@ System::computeDPDForces(double dt) {
     //           << " == " << -gamma * (gc::dot(dVel21, dPos21_n) * dPos21_n)
     //           << std::endl;
   }
-  dampingForce_e = forces.maskForce(dampingForce_e);
-  stochasticForce_e = forces.maskForce(stochasticForce_e);
+  forces.dampingForceVec = forces.maskForce(forces.dampingForceVec);
+  forces.stochasticForceVec = forces.maskForce(forces.stochasticForceVec);
   // dampingForce_e =
   //     forces.maskForce(forces.addNormal(forces.ontoNormal(dampingForce_e)));
   // stochasticForce_e =
   //     forces.maskForce(forces.addNormal(forces.ontoNormal(stochasticForce_e)));
-  return std::tie(dampingForce_e, stochasticForce_e);
+}
+
+gc::VertexData<gc::Vector3> System::computeDampingForce() {
+  return -parameters.damping * velocity;
 }
 
 gc::Vector3 System::computeGradientNorm2Gradient(
@@ -603,6 +598,8 @@ void System::computePhysicalForcing() {
         forces.bendingForceVec + forces.lineCapillaryForceVec +
         forces.adsorptionForceVec + forces.aggregationForceVec +
         forces.externalForceVec;
+    if (parameters.damping != 0)
+      forces.mechanicalForceVec += computeDampingForce();
     forces.mechanicalForce = forces.ontoNormal(forces.mechanicalForceVec);
   }
 

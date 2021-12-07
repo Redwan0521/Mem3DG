@@ -119,6 +119,9 @@ void Euler::checkParameters() {
   if (system.parameters.dpd.gamma != 0) {
     mem3dg_runtime_error("DPD has to be turned off for euler integration!");
   }
+  if (system.parameters.damping != 0) {
+    mem3dg_runtime_error("Damping to be 0 for euler integration!");
+  }
   if (isBacktrack) {
     if (rho >= 1 || rho <= 0 || c1 >= 1 || c1 <= 0) {
       mem3dg_runtime_error("To backtrack, 0<rho<1 and 0<c1<1!");

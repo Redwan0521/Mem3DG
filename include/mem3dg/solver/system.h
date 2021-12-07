@@ -717,7 +717,12 @@ public:
   /**
    * @brief Compute DPD forces of the system
    */
-  std::tuple<EigenVectorX3dr, EigenVectorX3dr> computeDPDForces(double dt);
+   void computeDPDForces(double dt);
+
+  /**
+   * @brief Compute damping forces of the system
+   */
+  gc::VertexData<gc::Vector3> computeDampingForce();
 
   // ==========================================================
   // ================        Energy          ==================

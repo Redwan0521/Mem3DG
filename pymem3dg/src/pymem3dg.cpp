@@ -112,8 +112,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
                                R"delim(
           option to scale time step according to mesh size
       )delim");
-  velocityverlet.def_readwrite("isCapEnergy",
-                               &VelocityVerlet::isCapEnergy,
+  velocityverlet.def_readwrite("isCapEnergy", &VelocityVerlet::isCapEnergy,
                                R"delim(
           option to exit if exceed initial energy cap
       )delim");
@@ -1057,7 +1056,6 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
             prescribe the External Force
         )delim");
   system.def("computeDPDForces", &System::computeDPDForces, py::arg("dt"),
-             py::return_value_policy::copy,
              R"delim(
             compute the DPDForces
         )delim");
@@ -1401,6 +1399,10 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
   parameters.def_readwrite("proteinMobility", &Parameters::proteinMobility,
                            R"delim(
           get protein mobility constant 
+      )delim");
+  parameters.def_readwrite("damping", &Parameters::damping,
+                           R"delim(
+          get damping constant 
       )delim");
 #pragma endregion parameters
 
