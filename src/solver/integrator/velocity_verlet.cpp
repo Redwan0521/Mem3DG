@@ -178,14 +178,16 @@ void VelocityVerlet::march() {
 
   // stepping on vertex position
   system.vpg->inputVertexPositions +=
-      system.velocity * timeStep + hdt2 * pastMechanicalForceVec;
+      system.velocity * timeStep +
+      hdt2 * pastMechanicalForceVec / system.vpg->vertexDualAreas;
 
   // compute summerized forces
   system.computePhysicalForcing(timeStep);
 
   // stepping on velocity
   system.velocity +=
-      (pastMechanicalForceVec + system.forces.mechanicalForceVec) * hdt;
+      (pastMechanicalForceVec + system.forces.mechanicalForceVec) /
+      system.vpg->vertexDualAreas * hdt;
   pastMechanicalForceVec = system.forces.mechanicalForceVec;
 
   // stepping on time

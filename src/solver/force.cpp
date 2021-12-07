@@ -463,10 +463,12 @@ System::computeDPDForces(double dt) {
     //           << " == " << -gamma * (gc::dot(dVel21, dPos21_n) * dPos21_n)
     //           << std::endl;
   }
-  dampingForce_e =
-      forces.maskForce(forces.addNormal(forces.ontoNormal(dampingForce_e)));
-  stochasticForce_e =
-      forces.maskForce(forces.addNormal(forces.ontoNormal(stochasticForce_e)));
+  dampingForce_e = forces.maskForce(dampingForce_e);
+  stochasticForce_e = forces.maskForce(stochasticForce_e);
+  // dampingForce_e =
+  //     forces.maskForce(forces.addNormal(forces.ontoNormal(dampingForce_e)));
+  // stochasticForce_e =
+  //     forces.maskForce(forces.addNormal(forces.ontoNormal(stochasticForce_e)));
   return std::tie(dampingForce_e, stochasticForce_e);
 }
 
