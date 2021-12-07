@@ -336,8 +336,10 @@ EigenVectorX3dr System::prescribeExternalForce() {
         parameters.external.Kf *
         (1 + sin(freq * 2 * constants::PI / totalHeight *
                  vpg->inputVertexPositions[v].z));
-    forces.externalForceVec[i] = externalPressureMagnitude *
-                                 vpg->vertexDualArea(v) * direction.normalize();
+    forces.externalForceVec[i] =
+        forces.maskForce(externalPressureMagnitude * vpg->vertexDualArea(v) *
+                             direction.normalize(),
+                         i);
   }
 
 #elif MODE == 1 // anchor force
@@ -352,9 +354,11 @@ EigenVectorX3dr System::prescribeExternalForce() {
   for (std::size_t i = 0; i < mesh->nVertices(); ++i) {
     gc::Vertex v{mesh->vertex(i)};
     forces.externalForceVec[i] =
-        exp(-time / decayTime) * parameters.external.Kf *
-        gaussianDistribution(geodesicDistanceFromPtInd[v], standardDeviation) *
-        vpg->vertexDualArea(v) * direction;
+        forces.maskForce(exp(-time / decayTime) * parameters.external.Kf *
+                             gaussianDistribution(geodesicDistanceFromPtInd[v],
+                                                  standardDeviation) *
+                             vpg->vertexDualArea(v) * direction,
+                         i);
   }
 #endif
   forces.externalForce = forces.ontoNormal(forces.externalForceVec);
@@ -447,6 +451,10 @@ System::computeDPDForces(double dt) {
         parameters.dpd.gamma * (gc::dot(dVel12, direction) * direction);
     forces.dampingForceVec[v1] -= df;
     forces.dampingForceVec[v2] += df;
+
+    // add normal damping
+    forces.dampingForceVec[v1] -= parameters.gamma * velocity[v1];
+    forces.dampingForceVec[v2] -= parameters.gamma * velocity[v2];
 
     if (sigma != 0) {
       double noise = normal_dist(rng);
