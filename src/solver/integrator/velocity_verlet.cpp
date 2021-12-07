@@ -181,13 +181,18 @@ void VelocityVerlet::march() {
       system.velocity * timeStep +
       hdt2 * pastMechanicalForceVec / system.vpg->vertexDualAreas;
 
+  // velocity predictor
+  gc::VertexData<gc::Vector3> oldVelocity(*system.mesh);
+  oldVelocity = system.velocity;
+  system.velocity += hdt * pastMechanicalForceVec;
+
   // compute summerized forces
   system.computePhysicalForcing(timeStep);
 
   // stepping on velocity
-  system.velocity +=
-      (pastMechanicalForceVec + system.forces.mechanicalForceVec) /
-      system.vpg->vertexDualAreas * hdt;
+  system.velocity = oldVelocity + (pastMechanicalForceVec +
+                                   system.forces.mechanicalForceVec) /
+                                      system.vpg->vertexDualAreas * hdt;
   pastMechanicalForceVec = system.forces.mechanicalForceVec;
 
   // stepping on time
