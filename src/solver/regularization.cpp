@@ -461,22 +461,10 @@ void System::localSmoothing(const gcs::Halfedge &he, std::size_t num,
 
 void System::globalUpdateAfterMutation() {
   // update the velocity
+  velocity = forces.maskForce(velocity); // important: velocity interpolation
+                                         // contaminate the zero velocity
   double oldKE = energy.kineticEnergy;
   velocity *= pow(oldKE / computeKineticEnergy(), 0.5);
-  // std::cout << "kinetic energy increases by " << computeKineticEnergy() - oldKE
-  //           << "from " << oldKE << "to " << energy.kineticEnergy << std::endl;
-
-  // // Update the distribution matrix when topology changes
-  // if (P.eta != 0) {
-  //   D = vpg->d0.transpose().cwiseAbs() / 2;
-  //   // D = vpg->d0.transpose();
-  //   // for (int k = 0; k < D.outerSize(); ++k) {
-  //   //   for (Eigen::SparseMatrix<double>::InnerIterator it(D, k); it; ++it)
-  //   {
-  //   //     it.valueRef() = 0.5;
-  //   //   }
-  //   // }
-  // }
 
   // Update mask when topology changes (likely not necessary, just for safety)
   if (isOpenMesh) {
@@ -493,13 +481,6 @@ void System::globalUpdateAfterMutation() {
     // }
   }
 
-  // Update spontaneous curvature and bending rigidity when topology changes
-  // if (!O.isHeterogeneous) {
-  //   proteinDensity.raw().se
-  //   // H0.raw().setConstant(mesh->nVertices(), 1, P.H0);
-  //   // Kb.raw().setConstant(mesh->nVertices(), 1, P.Kb);
-  // }
-
   // Update the vertex when topology changes
   if (!parameters.point.isFloatVertex) {
     for (gcs::Vertex v : mesh->vertices()) {
@@ -512,6 +493,25 @@ void System::globalUpdateAfterMutation() {
                            "unique/existing \"the\" point!");
     }
   }
+
+  // // Update the distribution matrix when topology changes
+  // if (P.eta != 0) {
+  //   D = vpg->d0.transpose().cwiseAbs() / 2;
+  //   // D = vpg->d0.transpose();
+  //   // for (int k = 0; k < D.outerSize(); ++k) {
+  //   //   for (Eigen::SparseMatrix<double>::InnerIterator it(D, k); it; ++it)
+  //   {
+  //   //     it.valueRef() = 0.5;
+  //   //   }
+  //   // }
+  // }
+
+  // Update spontaneous curvature and bending rigidity when topology changes
+  // if (!O.isHeterogeneous) {
+  //   proteinDensity.raw().se
+  //   // H0.raw().setConstant(mesh->nVertices(), 1, P.H0);
+  //   // Kb.raw().setConstant(mesh->nVertices(), 1, P.Kb);
+  // }
 }
 
 } // namespace solver
