@@ -178,8 +178,7 @@ void VelocityVerlet::march() {
 
   // stepping on vertex position
   system.vpg->inputVertexPositions +=
-      system.velocity * timeStep +
-      hdt2 * pastMechanicalForceVec / system.vpg->vertexDualAreas;
+      system.velocity * timeStep + hdt2 * pastMechanicalForceVec;
 
   // velocity predictor
   gc::VertexData<gc::Vector3> oldVelocity(*system.mesh);
@@ -190,9 +189,9 @@ void VelocityVerlet::march() {
   system.computePhysicalForcing(timeStep);
 
   // stepping on velocity
-  system.velocity = oldVelocity + (pastMechanicalForceVec +
-                                   system.forces.mechanicalForceVec) /
-                                      system.vpg->vertexDualAreas * hdt;
+  system.velocity =
+      oldVelocity +
+      (pastMechanicalForceVec + system.forces.mechanicalForceVec) * hdt;
   pastMechanicalForceVec = system.forces.mechanicalForceVec;
 
   // stepping on time
