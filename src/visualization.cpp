@@ -703,7 +703,7 @@ polyscope::SurfaceMesh *registerSurfaceMesh(std::string plyName,
     }
     if (options.mask) {
       polyscopeMesh->addVertexScalarQuantity(
-          "mask", ptrRichData->getVertexProperty<double>("mask"));
+          "force_mask", ptrRichData->getVertexProperty<double>("force_mask"));
     }
     if (options.the_point) {
       polyscopeMesh
@@ -851,7 +851,7 @@ polyscope::SurfaceMesh *registerSurfaceMesh(std::string plyName,
     if (options.mask) {
       polyscopeMesh
           ->addVertexScalarQuantity(
-              "mask", ptrRichData->getVertexProperty<double>("mask"))
+              "force_mask", ptrRichData->getVertexProperty<double>("force_mask"))
           ->setMapRange(std::make_pair(mapMinLim, mapMaxLim));
     }
     if (options.smoothing_mask) {
