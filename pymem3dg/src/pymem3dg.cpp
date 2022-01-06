@@ -38,14 +38,14 @@ namespace integrator {
 namespace py = pybind11;
 
 // Initialize the `pymem3dg` module
-PYBIND11_MODULE(pymem3dg, pymem3dg) {
-  pymem3dg.doc() = "Python wrapper around the DDG solver C++ library.";
+PYBIND11_MODULE(pymem3dg, m) {
+  m.doc() = "Python wrapper around the DDG solver C++ library.";
 
 #pragma region integrators
   // ==========================================================
   // =============     Integrator Template      ===============
   // ==========================================================
-  //   py::class_<Integrator> integrator(pymem3dg, "Integrator", R"delim(
+  //   py::class_<Integrator> integrator(m, "Integrator", R"delim(
   //         The integrator
   //     )delim");
   //   integrator.def(py::init<System &, double, double, double, double,
@@ -79,7 +79,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
   // ==========================================================
   // =============     Velocity Verlet          ===============
   // ==========================================================
-  py::class_<VelocityVerlet> velocityverlet(pymem3dg, "VelocityVerlet",
+  py::class_<VelocityVerlet> velocityverlet(m, "VelocityVerlet",
                                             R"delim(
         Velocity Verlet integration
     )delim");
@@ -150,7 +150,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
   // ==========================================================
   // =============     Forward Euelr            ===============
   // ==========================================================
-  py::class_<Euler> euler(pymem3dg, "Euler", R"delim(
+  py::class_<Euler> euler(m, "Euler", R"delim(
         forward euler (gradient descent) integration
     )delim");
 
@@ -250,7 +250,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
   // ==========================================================
   // =============     Conjugate Gradient       ===============
   // ==========================================================
-  py::class_<ConjugateGradient> conjugategradient(pymem3dg, "ConjugateGradient",
+  py::class_<ConjugateGradient> conjugategradient(m, "ConjugateGradient",
                                                   R"delim(
         conjugate Gradient propagator
     )delim");
@@ -375,7 +375,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
   // ==========================================================
   // =============            BFGS              ===============
   // ==========================================================
-  py::class_<BFGS> bfgs(pymem3dg, "BFGS",
+  py::class_<BFGS> bfgs(m, "BFGS",
                         R"delim(
         conjugate Gradient propagator
     )delim");
@@ -419,7 +419,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
   // ==========================================================
   // =============     Forces             ===============
   // ==========================================================
-  py::class_<Forces> forces(pymem3dg, "Forces",
+  py::class_<Forces> forces(m, "Forces",
                             R"delim(
         The forces object
     )delim");
@@ -573,7 +573,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
   // ==========================================================
   // =============     MeshMutator              ===============
   // ==========================================================
-  py::class_<MeshProcessor::MeshRegularizer> meshregularizer(pymem3dg,
+  py::class_<MeshProcessor::MeshRegularizer> meshregularizer(m,
                                                              "MeshRegularizer",
                                                              R"delim(
         The mesh mutator settings 
@@ -613,7 +613,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           read data from reference mesh
       )delim");
 
-  py::class_<MeshProcessor::MeshMutator> meshmutator(pymem3dg, "MeshMutator",
+  py::class_<MeshProcessor::MeshMutator> meshmutator(m, "MeshMutator",
                                                      R"delim(
         The mesh mutator settings 
     )delim");
@@ -726,7 +726,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           target face area 
       )delim");
 
-  py::class_<MeshProcessor> meshprocessor(pymem3dg, "MeshProcessor",
+  py::class_<MeshProcessor> meshprocessor(m, "MeshProcessor",
                                           R"delim(
         The mesh processor settings 
     )delim");
@@ -758,7 +758,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
   // ==========================================================
   // =============          System              ===============
   // ==========================================================
-  py::class_<System> system(pymem3dg, "System",
+  py::class_<System> system(m, "System",
                             R"delim(
         The system
     )delim");
@@ -1121,7 +1121,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
   // ==========================================================
   // =============   Simulation parameters      ===============
   // ==========================================================
-  py::class_<Parameters::Boundary> boundary(pymem3dg, "Boundary", R"delim(
+  py::class_<Parameters::Boundary> boundary(m, "Boundary", R"delim(
         The boundary conditions
     )delim");
   boundary.def(py::init<>());
@@ -1136,7 +1136,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get the option of "pin", or "none" to specify protein boundary condition.
       )delim");
 
-  py::class_<Parameters::Variation> variation(pymem3dg, "Variation", R"delim(
+  py::class_<Parameters::Variation> variation(m, "Variation", R"delim(
         Variation
     )delim");
   variation.def(py::init<>());
@@ -1155,7 +1155,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get domain of shape variation
       )delim");
 
-  py::class_<Parameters::Bending> bending(pymem3dg, "Bending", R"delim(
+  py::class_<Parameters::Bending> bending(m, "Bending", R"delim(
         The bending parameters
     )delim");
   bending.def(py::init<>());
@@ -1176,7 +1176,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get relation between H0 and protein densit, "linear" or "hill"
       )delim");
 
-  py::class_<Parameters::Tension> tension(pymem3dg, "Tension", R"delim(
+  py::class_<Parameters::Tension> tension(m, "Tension", R"delim(
         The surface tension parameters
     )delim");
   tension.def(py::init<>());
@@ -1202,7 +1202,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get augmented Lagrangian parameter for area
       )delim");
 
-  py::class_<Parameters::Osmotic> osmotic(pymem3dg, "Osmotic", R"delim(
+  py::class_<Parameters::Osmotic> osmotic(m, "Osmotic", R"delim(
         The osmotic pressure parameters
     )delim");
   osmotic.def_readwrite("Kv", &Parameters::Osmotic::Kv,
@@ -1240,7 +1240,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get augmented Lagrangian parameter for volume
       )delim");
 
-  py::class_<Parameters::Adsorption> adsorption(pymem3dg, "Adsorption",
+  py::class_<Parameters::Adsorption> adsorption(m, "Adsorption",
                                                 R"delim(
         The adsorption parameters
     )delim");
@@ -1249,7 +1249,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get adsorption energy per protein
       )delim");
 
-  py::class_<Parameters::Aggregation> aggregation(pymem3dg, "Aggregation",
+  py::class_<Parameters::Aggregation> aggregation(m, "Aggregation",
                                                   R"delim(
         The aggregation parameters
     )delim");
@@ -1258,7 +1258,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get aggregation energy 
       )delim");
 
-  py::class_<Parameters::External> external(pymem3dg, "External",
+  py::class_<Parameters::External> external(m, "External",
                                             R"delim(
         The external force parameters
     )delim");
@@ -1267,7 +1267,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get Magnitude of external force 
       )delim");
 
-  py::class_<Parameters::DPD> dpd(pymem3dg, "DPD",
+  py::class_<Parameters::DPD> dpd(m, "DPD",
                                   R"delim(
         The DPD parameters
     )delim");
@@ -1276,7 +1276,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get Dissipation coefficient 
       )delim");
 
-  py::class_<Parameters::Dirichlet> dirichlet(pymem3dg, "Dirichlet",
+  py::class_<Parameters::Dirichlet> dirichlet(m, "Dirichlet",
                                               R"delim(
         The Dirichlet energy parameters
     )delim");
@@ -1285,20 +1285,20 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get coefficient
       )delim");
 
-  py::class_<Parameters::SelfAvoidance> selfAvoidance(pymem3dg, "SelfAvoidance",
-                                              R"delim(
+  py::class_<Parameters::SelfAvoidance> selfAvoidance(m, "SelfAvoidance",
+                                                      R"delim(
         The SelfAvoidance energy parameters
     )delim");
   selfAvoidance.def_readwrite("d", &Parameters::SelfAvoidance::d,
-                          R"delim(
+                              R"delim(
           get coefficient of limit distance
       )delim");
   selfAvoidance.def_readwrite("mu", &Parameters::SelfAvoidance::mu,
-                          R"delim(
+                              R"delim(
           get coefficient of penalty coefficient
       )delim");
 
-  py::class_<Parameters::Point> point(pymem3dg, "Point",
+  py::class_<Parameters::Point> point(m, "Point",
                                       R"delim(
         The Point energy parameters
     )delim");
@@ -1312,7 +1312,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
       )delim");
 
   py::class_<Parameters::ProteinDistribution> proteindistribution(
-      pymem3dg, "ProteinDistribution",
+      m, "ProteinDistribution",
       R"delim(
         The protein distribution parameters
     )delim");
@@ -1325,7 +1325,8 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get (initial) protein density
       )delim");
   proteindistribution.def_readwrite(
-      "tanhSharpness", &Parameters::ProteinDistribution::tanhSharpness, R"delim(
+      "tanhSharpness", &Parameters::ProteinDistribution::tanhSharpness,
+      R"delim(
           get protein density sharpness of tanh transition
       )delim");
   proteindistribution.def_readwrite(
@@ -1333,7 +1334,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
           get interior point parameter for protein density
       )delim");
 
-  py::class_<Parameters> parameters(pymem3dg, "Parameters", R"delim(
+  py::class_<Parameters> parameters(m, "Parameters", R"delim(
         The parameters
     )delim");
   parameters.def(py::init<>());
@@ -1427,7 +1428,7 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
   // ==========================================================
   // =============   Free energy                ===============
   // ==========================================================
-  py::class_<Energy> energy(pymem3dg, "Energy", R"delim(
+  py::class_<Energy> energy(m, "Energy", R"delim(
         The energy
     )delim");
   energy.def(py::init<>());
@@ -1487,18 +1488,18 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
    * @brief visualization drivers
    */
 
-  pymem3dg.def("visualize", &visualize, py::arg("f"),
-               R"delim(
+  m.def("visualize", &visualize, py::arg("f"),
+        R"delim(
           visualization of the system object
       )delim");
 
-  pymem3dg.def(
+  m.def(
       "snapshot_ply", &snapshot_ply,
       " Visualize .ply file in polysope with options of additional quantities",
       py::arg("fileName"), py::arg("options"), py::arg("transparency") = 1,
       py::arg("fov") = 50, py::arg("edgeWidth") = 1);
 
-  pymem3dg.def(
+  m.def(
       "animate_ply", &animate_ply,
       " Visualize .ply files in polysope with options of additional quantities",
       py::arg("framesDir"), py::arg("options"), py::arg("frameNum"),
@@ -1507,29 +1508,28 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
       py::arg("edgeWidth") = 1);
 
 #ifdef MEM3DG_WITH_NETCDF
-  pymem3dg.def(
-      "snapshot_nc", &snapshot_nc, "Visualize netcdf file in single frame",
-      py::arg("fileName"), py::arg("options"), py::arg("frame"),
-      py::arg("transparency") = 1, py::arg("angle") = 0, py::arg("fov") = 50,
-      py::arg("edgeWidth") = 1, py::arg("isShow") = true,
-      py::arg("isSave") = false, py::arg("screenshotName") = "screenshot.png");
+  m.def("snapshot_nc", &snapshot_nc, "Visualize netcdf file in single frame",
+        py::arg("fileName"), py::arg("options"), py::arg("frame"),
+        py::arg("transparency") = 1, py::arg("angle") = 0, py::arg("fov") = 50,
+        py::arg("edgeWidth") = 1, py::arg("isShow") = true,
+        py::arg("isSave") = false,
+        py::arg("screenshotName") = "screenshot.png");
 
-  pymem3dg.def("animate_nc", &animate_nc,
-               "Animate netcdf file with options of additional quantities",
-               py::arg("fileName"), py::arg("options"),
-               py::arg("transparency") = 1, py::arg("fov") = 50,
-               py::arg("edgeWidth") = 1);
+  m.def("animate_nc", &animate_nc,
+        "Animate netcdf file with options of additional quantities",
+        py::arg("fileName"), py::arg("options"), py::arg("transparency") = 1,
+        py::arg("fov") = 50, py::arg("edgeWidth") = 1);
 #endif
 
   /**
    * @brief visualization options
    */
-  py::class_<Quantities> quantities(pymem3dg, "Quantities", R"delim(
+  py::class_<Quantities> quantities(m, "Quantities", R"delim(
         The quantities for visualization
     )delim");
   quantities.def(py::init<>());
-  quantities.def(py::init<bool, bool, bool, bool, bool, bool, bool, bool, bool, bool,
-                          bool, bool, bool, bool>());
+  quantities.def(py::init<bool, bool, bool, bool, bool, bool, bool, bool, bool,
+                          bool, bool, bool, bool, bool>());
   quantities.def_readwrite("ref_coord", &Quantities::ref_coord,
                            R"delim(
         visualize reference coordinate 
@@ -1633,62 +1633,56 @@ PYBIND11_MODULE(pymem3dg, pymem3dg) {
   // ==========================================================
   // =============      mesh generation    ===============
   // ==========================================================
-  pymem3dg.def(
-      "getCylinder", &getCylinderMatrix,
-      "get topology and vertex position matrix of a non-capped cylinder",
-      py::arg("R"), py::arg("nR"), py::arg("nh"), py::arg("freq") = 1,
-      py::arg("amp") = 0);
+  m.def("getCylinder", &getCylinderMatrix,
+        "get topology and vertex position matrix of a non-capped cylinder",
+        py::arg("R"), py::arg("nR"), py::arg("nh"), py::arg("freq") = 1,
+        py::arg("amp") = 0);
 
-  pymem3dg.def("getIcosphere", &getIcosphereMatrix,
-               "get topology and vertex position matrix of icosphere",
-               py::arg("R"), py::arg("nSub") = 0);
+  m.def("getIcosphere", &getIcosphereMatrix,
+        "get topology and vertex position matrix of icosphere", py::arg("R"),
+        py::arg("nSub") = 0);
 
-  pymem3dg.def("getTetrahedron", &getTetrahedronMatrix,
-               "get topology and vertex position matrix of tetrahedron");
+  m.def("getTetrahedron", &getTetrahedronMatrix,
+        "get topology and vertex position matrix of tetrahedron");
 
-  pymem3dg.def("getDiamond", &getDiamondMatrix,
-               "get topology and vertex position matrix of diamond",
-               py::arg("dihedral"));
+  m.def("getDiamond", &getDiamondMatrix,
+        "get topology and vertex position matrix of diamond",
+        py::arg("dihedral"));
 
-  pymem3dg.def("getHexagon", &getHexagonMatrix,
-               "get topology and vertex position matrix of Hexagon",
-               py::arg("R"), py::arg("nSub") = 0);
+  m.def("getHexagon", &getHexagonMatrix,
+        "get topology and vertex position matrix of Hexagon", py::arg("R"),
+        py::arg("nSub") = 0);
 
-  pymem3dg.def(
-      "subdivide",
-      py::overload_cast<Eigen::Matrix<std::size_t, Eigen::Dynamic, 3> &,
-                        Eigen::Matrix<double, Eigen::Dynamic, 3> &,
-                        std::size_t>(&subdivide),
-      "subdivide the mesh", py::arg("faces"), py::arg("coords"),
-      py::arg("nSub"));
+  m.def("subdivide",
+        py::overload_cast<Eigen::Matrix<std::size_t, Eigen::Dynamic, 3> &,
+                          Eigen::Matrix<double, Eigen::Dynamic, 3> &,
+                          std::size_t>(&subdivide),
+        "subdivide the mesh", py::arg("faces"), py::arg("coords"),
+        py::arg("nSub"));
 
-  pymem3dg.def(
-      "loopSubdivide",
-      py::overload_cast<Eigen::Matrix<std::size_t, Eigen::Dynamic, 3> &,
-                        Eigen::Matrix<double, Eigen::Dynamic, 3> &,
-                        std::size_t>(&loopSubdivide),
-      "subdivide the mesh in Loop scheme", py::arg("faces"), py::arg("coords"),
-      py::arg("nSub"));
+  m.def("loopSubdivide",
+        py::overload_cast<Eigen::Matrix<std::size_t, Eigen::Dynamic, 3> &,
+                          Eigen::Matrix<double, Eigen::Dynamic, 3> &,
+                          std::size_t>(&loopSubdivide),
+        "subdivide the mesh in Loop scheme", py::arg("faces"),
+        py::arg("coords"), py::arg("nSub"));
 
-  pymem3dg.def("readMesh", &readMesh,
-               "read vertex and face matrix from .ply file",
-               py::arg("plyName"));
+  m.def("readMesh", &readMesh, "read vertex and face matrix from .ply file",
+        py::arg("plyName"));
 
-  pymem3dg.def("readData", py::overload_cast<std::string &>(&readData),
-               "read data in the format of matrix from .ply file",
-               py::arg("plyName"));
-  pymem3dg.def("readData",
-               py::overload_cast<std::string &, std::string &>(&readData),
-               "read data in the format of matrix from .ply file",
-               py::arg("plyName"), py::arg("elementName"));
-  pymem3dg.def(
+  m.def("readData", py::overload_cast<std::string &>(&readData),
+        "read data in the format of matrix from .ply file", py::arg("plyName"));
+  m.def("readData", py::overload_cast<std::string &, std::string &>(&readData),
+        "read data in the format of matrix from .ply file", py::arg("plyName"),
+        py::arg("elementName"));
+  m.def(
       "readData",
       py::overload_cast<std::string &, std::string &, std::string &>(&readData),
       "read data in the format of matrix from .ply file", py::arg("plyName"),
       py::arg("elementName"), py::arg("propertyName"));
 
-  pymem3dg.def("processSoup", &processSoup, "process polygon soup",
-               py::arg("meshName"));
+  m.def("processSoup", &processSoup, "process polygon soup",
+        py::arg("meshName"));
 
 #pragma endregion mesh_io
 };
