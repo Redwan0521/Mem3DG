@@ -22,6 +22,14 @@ import sys
 import subprocess
 import re
 
+from setuptools import Extension
+
+class CMakeExtension(Extension):
+    def __init__(self, name, sourcedir=''):
+        Extension.__init__(self, name, sources=[])
+        self.sourcedir = os.path.abspath(sourcedir)
+
+
 
 def git_version():
     """Get the version from git describe
